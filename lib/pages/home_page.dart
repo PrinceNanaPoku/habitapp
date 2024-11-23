@@ -77,6 +77,87 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  //edit habit
+  void editHabit(Habit habit) {
+    //set controller to current habit name
+    textController.text = habit.name;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: TextField(
+          controller: textController,
+        ),
+        actions: [
+          //save button
+          MaterialButton(
+            onPressed: () {
+              //get the new habit name
+              String newHabitName = textController.text;
+              //save to db
+              context
+                  .read<HabitDatabase>()
+                  .updateHabitName(habit.id, newHabitName);
+              //pop box
+              Navigator.pop(context);
+
+              //clear controller
+              textController.clear();
+            },
+            child: const Text('Update'),
+          ),
+
+          //cancel button
+          MaterialButton(
+            onPressed: () {
+              //pop box
+              Navigator.pop(context);
+              //clear controller
+              textController.clear();
+            },
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //delete habit
+  void deleteHabit(Habit habit) {
+    //set controller to current habit name
+    textController.text = habit.name;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: TextField(
+          controller: textController,
+        ),
+        actions: [
+          //delete button
+          MaterialButton(
+            onPressed: () {
+              //save to db
+              context.read<HabitDatabase>().deleteHabit(habit.id);
+              //pop box
+              Navigator.pop(context);
+            },
+            child: const Text('Delete'),
+          ),
+
+          //cancel button
+          MaterialButton(
+            onPressed: () {
+              //pop box
+              Navigator.pop(context);
+              //clear controller
+              textController.clear();
+            },
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,6 +194,8 @@ class _HomePageState extends State<HomePage> {
             isCompleted: isCompleted,
             text: habit.name,
             onChanged: (value) => turnHabitOnOff(value, habit),
+            onEditPressed: (context) => editHabit(habit),
+            onDeletePressed: (context) => deleteHabit(habit),
           );
         });
   }
